@@ -2203,6 +2203,7 @@ erpnext.TransactionController = class TransactionController extends erpnext.taxe
 				'item_code': item.item_code,
 				'valid_from': ["<=", doc.transaction_date || doc.bill_date || doc.posting_date],
 				'item_group': item.item_group,
+				'disabled': 0,
 			}
 
 			if (doc.tax_category)
