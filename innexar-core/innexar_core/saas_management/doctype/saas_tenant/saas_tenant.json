@@ -1,0 +1,153 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:tenant_name",
+ "creation": "2025-11-05 15:30:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "tenant_name",
+  "subdomain",
+  "column_break_3",
+  "plan",
+  "state",
+  "section_break_6",
+  "contact_email",
+  "contact_phone",
+  "column_break_9",
+  "admin_password",
+  "section_break_11",
+  "container_name",
+  "container_id",
+  "column_break_14",
+  "container_port",
+  "access_url",
+  "container_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "tenant_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nome do Tenant",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "subdomain",
+   "fieldtype": "Data",
+   "label": "Subdom\u00ednio",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "plan",
+   "fieldtype": "Link",
+   "label": "Plano",
+   "options": "SAAS Plan",
+   "reqd": 1
+  },
+  {
+   "default": "draft",
+   "fieldname": "state",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "draft\nprovisioning\nactive\nsuspended\ncancelled"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break",
+   "label": "Contato"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "E-mail"
+  },
+  {
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "label": "Telefone"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "admin_password",
+   "fieldtype": "Password",
+   "label": "Senha Admin"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break",
+   "label": "Container (T\u00e9cnico)"
+  },
+  {
+   "fieldname": "container_name",
+   "fieldtype": "Data",
+   "label": "Nome do Container",
+   "read_only": 1
+  },
+  {
+   "fieldname": "container_id",
+   "fieldtype": "Data",
+   "label": "Container ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "container_port",
+   "fieldtype": "Int",
+   "label": "Porta",
+   "read_only": 1
+  },
+  {
+   "fieldname": "access_url",
+   "fieldtype": "Data",
+   "label": "URL de Acesso",
+   "read_only": 1
+  },
+  {
+   "fieldname": "container_status",
+   "fieldtype": "Data",
+   "label": "Status do Container",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2025-11-05 15:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "SAAS Management",
+ "name": "SAAS Tenant",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
+
+

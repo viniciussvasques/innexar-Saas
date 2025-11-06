@@ -1,0 +1,156 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:plan_name",
+ "creation": "2025-11-05 15:30:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "plan_name",
+  "technical_name",
+  "column_break_3",
+  "active",
+  "section_break_5",
+  "monthly_price_usd",
+  "monthly_price_brl",
+  "column_break_8",
+  "yearly_price_usd",
+  "yearly_price_brl",
+  "section_break_11",
+  "max_users",
+  "max_storage_gb",
+  "max_companies",
+  "column_break_15",
+  "trial_days",
+  "section_break_17",
+  "erpnext_modules"
+ ],
+ "fields": [
+  {
+   "fieldname": "plan_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nome do Plano",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "technical_name",
+   "fieldtype": "Data",
+   "label": "Nome T\u00e9cnico",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "active",
+   "fieldtype": "Check",
+   "label": "Ativo"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break",
+   "label": "Pre\u00e7os"
+  },
+  {
+   "fieldname": "monthly_price_usd",
+   "fieldtype": "Currency",
+   "label": "Pre\u00e7o Mensal (USD)",
+   "options": "USD"
+  },
+  {
+   "fieldname": "monthly_price_brl",
+   "fieldtype": "Currency",
+   "label": "Pre\u00e7o Mensal (BRL)",
+   "options": "BRL"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "yearly_price_usd",
+   "fieldtype": "Currency",
+   "label": "Pre\u00e7o Anual (USD)",
+   "options": "USD"
+  },
+  {
+   "fieldname": "yearly_price_brl",
+   "fieldtype": "Currency",
+   "label": "Pre\u00e7o Anual (BRL)",
+   "options": "BRL"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break",
+   "label": "Limites"
+  },
+  {
+   "fieldname": "max_users",
+   "fieldtype": "Int",
+   "label": "M\u00e1x. Usu\u00e1rios"
+  },
+  {
+   "fieldname": "max_storage_gb",
+   "fieldtype": "Int",
+   "label": "M\u00e1x. Armazenamento (GB)"
+  },
+  {
+   "fieldname": "max_companies",
+   "fieldtype": "Int",
+   "label": "M\u00e1x. Empresas"
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "14",
+   "fieldname": "trial_days",
+   "fieldtype": "Int",
+   "label": "Dias de Trial"
+  },
+  {
+   "fieldname": "section_break_17",
+   "fieldtype": "Section Break",
+   "label": "M\u00f3dulos ERPNext"
+  },
+  {
+   "description": "M\u00f3dulos separados por v\u00edrgula (ex: stock,crm,accounts)",
+   "fieldname": "erpnext_modules",
+   "fieldtype": "Small Text",
+   "label": "M\u00f3dulos"
+  }
+ ],
+ "links": [],
+ "modified": "2025-11-05 15:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "SAAS Management",
+ "name": "SAAS Plan",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
+
+

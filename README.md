@@ -1,139 +1,242 @@
-<div align="center">
-    <h1>Innexar Platform</h1>
-    <p align="center">
-        <p>ERP personalizado baseado no ERPNext para a Innexar</p>
-    </p>
+# 🚀 Innexar ERP Cloud - Plataforma SaaS White Label
 
-![Innexar Platform](https://via.placeholder.com/600x200.png?text=Innexar+Platform)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![ERPNext](https://img.shields.io/badge/ERPNext-14.99.5-green.svg)](https://erpnext.com/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
 
-</div>
+> Plataforma SaaS de gestão empresarial (ERP) baseada no framework ERPNext, totalmente personalizada, multilíngue e com suporte a cobrança em dólar e real.
 
-## 🚀 Visão Geral
-A Innexar Platform é uma solução ERP personalizada baseada no ERPNext, desenvolvida para atender às necessidades específicas da Innexar e seus clientes.
+## 📋 Sobre o Projeto
 
-## 🛠️ Primeiros Passos
+O **Innexar ERP Cloud** é uma solução SaaS White Label que permite oferecer ERPNext como serviço, com:
 
-### ✅ Pré-requisitos
-- Docker Desktop para Windows
+- ✅ **Multi-tenancy**: Cada cliente tem seu próprio ambiente isolado (container dedicado)
+- ✅ **Provisionamento Automático**: Criação de tenants com containers Docker dedicados
+- ✅ **Múltiplos Planos**: Sistema de planos com módulos configuráveis
+- ✅ **Billing**: Suporte para cobrança em USD e BRL
+- ✅ **Multi-idioma**: Português (pt-BR) e Espanhol (es-ES) nativos
+- ✅ **Branding Personalizado**: Totalmente personalizado com cores e logo da Innexar
+- ✅ **Dashboard Administrativo**: Painel centralizado para gerenciar tenants, planos e billing
+
+## 🏗️ Arquitetura
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Innexar Platform (Admin)                  │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  ERPNext Base + Innexar Core Module                  │  │
+│  │  - Gerenciamento de Tenants                           │  │
+│  │  - Gerenciamento de Planos                             │  │
+│  │  - Billing & Cobrança                                  │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            │ Docker API
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+┌───────▼──────┐  ┌─────────▼─────────┐  ┌─────▼──────┐
+│  Tenant 01   │  │    Tenant 02      │  │  Tenant N  │
+│  (teste01)   │  │  (containerized)  │  │  (isolated)│
+│              │  │                   │  │            │
+│  ERPNext     │  │    ERPNext        │  │  ERPNext   │
+│  + Modules   │  │    + Modules      │  │  + Modules │
+│              │  │                   │  │            │
+│  DB: tenant_ │  │  DB: tenant_xxx   │  │  DB: ...   │
+│     teste01  │  │                   │  │            │
+└──────────────┘  └───────────────────┘  └────────────┘
+```
+
+### Componentes Principais
+
+- **Backend**: ERPNext + Frappe Framework (Python)
+- **Database**: MariaDB (compartilhado, um DB por tenant)
+- **Containerização**: Docker + Docker Compose
+- **Cache/Fila**: Redis
+- **Proxy Reverso**: Nginx (porta 80/443)
+- **Orquestração**: Docker Compose (local) / Kubernetes (produção)
+
+## 🚀 Quick Start
+
+### Pré-requisitos
+
+- Windows 10/11 ou Linux
+- Docker Desktop (ou Docker Engine + Docker Compose)
 - Git
-- PowerShell 5.1 ou superior
 
-### 🚀 Iniciando o Ambiente
+### Instalação Local
 
-1. **Clonar o repositório** (se ainda não tiver feito):
-   ```powershell
-   git clone https://github.com/Innexar/innexar-platform.git
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/viniciussvasques/innexar-Saas.git
+   cd innexar-Saas
+   ```
+
+2. **Suba os serviços**
+   ```bash
    cd innexar-platform
+   docker compose up -d --build
    ```
 
-2. **Iniciar o ambiente** (pode demorar na primeira execução):
-   ```powershell
-   .\start-dev.ps1
+3. **Aguarde a inicialização** (pode levar alguns minutos na primeira vez)
+   ```bash
+   docker compose logs -f backend
    ```
-   > Nota: Na primeira execução, o script irá:
-   > 1. Verificar e instalar dependências
-   > 2. Baixar as imagens Docker necessárias
-   > 3. Configurar o banco de dados
-   > 4. Iniciar todos os serviços
 
-3. **Acessar o sistema**:
-   - URL: http://localhost:8000
-   - Usuário: Administrator
-   - Senha: innexar_admin
+4. **Acesse o sistema**
+   - **Gerenciador**: http://localhost:8000
+   - **Login**: `Administrator`
+   - **Senha**: `innexar_admin`
 
-## 🏗️ Estrutura do Projeto
+### Criando Seu Primeiro Tenant
+
+1. Acesse o gerenciador: http://localhost:8000
+2. Vá em: **Innexar SaaS** → **SAAS Tenant**
+3. Clique em **Novo** e preencha:
+   - Nome do Tenant: `meu-cliente`
+   - Subdomínio: `meu-cliente`
+   - Plano: Escolha um plano (Starter, Professional ou Enterprise)
+   - Senha Admin: (opcional, será gerada automaticamente se não informada)
+4. Clique em **Salvar**
+5. Aguarde o provisionamento automático (você receberá uma notificação quando estiver pronto)
+
+### Acessando o Tenant
+
+Após o provisionamento:
+
+- **URL**: `http://localhost:PORTA` (a porta será mostrada no registro do tenant)
+- **Login**: `Administrator`
+- **Senha**: A senha definida ou gerada automaticamente
+
+## 📁 Estrutura do Projeto
 
 ```
-innexar-platform/
-├── apps/                    # Aplicativos personalizados
-├── config/                 # Configurações do ambiente
-│   └── mariadb.cnf         # Configuração do MariaDB
-├── docker/                 # Configurações Docker
-│   ├── backend/           # Configurações do backend
-│   └── nginx/             # Configurações do Nginx
-├── logs/                  # Logs da aplicação
-├── sites/                 # Sites e arquivos de configuração
-├── docker-compose.yml     # Configuração do Docker Compose
-└── start-dev.ps1         # Script de inicialização
+Innexar-saas/
+├── innexar-platform/          # Plataforma principal (ERPNext + Docker)
+│   ├── docker/                 # Dockerfiles e entrypoints
+│   ├── docker-compose.yml      # Orquestração local
+│   ├── config/                 # Configurações (MariaDB, etc)
+│   └── README-DEV.md           # Guia de desenvolvimento
+│
+├── innexar-core/               # Módulo Innexar Core (app Frappe)
+│   └── innexar_core/
+│       ├── saas_management/    # Módulo SaaS
+│       │   ├── doctype/        # DocTypes (SAAS Plan, SAAS Tenant)
+│       │   ├── models/         # Modelos de negócio
+│       │   └── utils/          # Utilitários
+│       └── hooks.py            # Hooks do Frappe
+│
+├── DOCS/                       # Documentação técnica
+│   ├── 01-resumo-executivo.md
+│   ├── 02-arquitetura-tecnica.md
+│   ├── 03-planos-e-modulos.md
+│   └── ...
+│
+└── scripts/                    # Scripts auxiliares
+    └── create_tenant.py         # Script de criação manual de tenants
 ```
 
-## 🛠️ Comandos Úteis
+## 🎯 Funcionalidades
 
-- **Reiniciar containers**:
-  ```powershell
-  docker-compose restart
-  ```
+### ✅ Implementado (MVP)
 
-- **Visualizar logs**:
-  ```powershell
-  docker-compose logs -f
-  ```
+- [x] Multi-tenancy com containers Docker isolados
+- [x] Provisionamento automático de tenants
+- [x] Gerenciamento de planos (Starter, Professional, Enterprise)
+- [x] Dashboard administrativo para gerenciar tenants
+- [x] Suporte a múltiplos idiomas (pt-BR, es-ES, en)
+- [x] Branding personalizado (logo, cores)
+- [x] Controle de status de tenants (draft, provisioning, active, suspended, cancelled)
+- [x] Gerenciamento de containers (iniciar, parar, reiniciar, reconstruir)
 
-- **Acessar terminal do container backend**:
-  ```powershell
-  docker-compose exec backend bash
-  ```
+### 🚧 Em Desenvolvimento
 
-- **Criar backup**:
-  ```powershell
-  docker-compose exec backend bench --site innexar.local backup
-  ```
+- [ ] Integração com Stripe/PagSeguro para pagamentos
+- [ ] Automação de DNS (Cloudflare API)
+- [ ] Proxy reverso com wildcard SSL (Traefik/Nginx)
+- [ ] Sistema de billing completo
+- [ ] Dashboard de métricas e uso
+- [ ] Backups automáticos
 
-- **Atualizar aplicativos**:
-  ```powershell
-  docker-compose exec backend bench --site innexar.local migrate
-  ```
+### 📋 Planejado
 
-## 🔄 Desenvolvimento
+- [ ] Automação completa de criação via landing page
+- [ ] Sistema de notificações por email
+- [ ] Suporte técnico integrado
+- [ ] Escalonamento horizontal (Kubernetes)
+- [ ] Monitoramento (Prometheus + Grafana)
 
-### Criar um novo aplicativo
+## 📚 Documentação
+
+A documentação completa está disponível em `DOCS/`:
+
+- [Índice](DOCS/00-indice.md)
+- [Resumo Executivo](DOCS/01-resumo-executivo.md)
+- [Arquitetura Técnica](DOCS/02-arquitetura-tecnica.md)
+- [Planos e Módulos](DOCS/03-planos-e-modulos.md)
+- [Fluxo de Provisionamento](DOCS/04-fluxo-provisionamento.md)
+- [Plano de Fases](DOCS/05-plano-fases.md)
+- [Recomendações Técnicas](DOCS/06-recomendacoes-tecnicas.md)
+
+## 🛠️ Desenvolvimento
+
+Veja o [README-DEV.md](innexar-platform/README-DEV.md) para instruções detalhadas de desenvolvimento.
+
+### Build da Imagem Tenant
+
+Para rebuildar a imagem dos tenants (após alterações no `innexar-core`):
+
+**Windows:**
 ```powershell
-docker-compose exec backend bench new-app innexar_novo_app
+.\innexar-platform\build-tenant-image.bat
 ```
 
-### Instalar um aplicativo
-```powershell
-docker-compose exec backend bench --site innexar.local install-app innexar_novo_app
+**Linux/Mac:**
+```bash
+./innexar-platform/build-tenant-image.sh
 ```
 
-## 📄 Licença
-Proprietário - Todos os direitos reservados © 2025 Innexar Platform
+## 🔐 Segurança
 
-### Containerized Installation
+- Cada tenant roda em um container isolado
+- Bancos de dados separados por tenant
+- Senhas geradas automaticamente (ou definidas manualmente)
+- Docker socket com permissões restritas
 
-Use docker to deploy ERPNext in production or for development of [Frappe](https://github.com/frappe/frappe) apps. See https://github.com/frappe/frappe_docker for more details.
+⚠️ **IMPORTANTE**: Em produção, configure:
+- SSL/TLS para todos os domínios
+- Firewall e rate limiting
+- Backups automáticos
+- Monitoramento de segurança
 
-### Manual Install
+## 📝 Licença
 
-The Easy Way: our install script for bench will install all dependencies (e.g. MariaDB). See https://github.com/frappe/bench for more details.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-New passwords will be created for the ERPNext "Administrator" user, the MariaDB root user, and the frappe user (the script displays the passwords and saves them to ~/frappe_passwords.txt).
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Por favor:
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📞 Contato
+
+- **GitHub**: [@viniciussvasques](https://github.com/viniciussvasques)
+- **Repositório**: https://github.com/viniciussvasques/innexar-Saas
+
+## 🙏 Agradecimentos
+
+- [ERPNext](https://erpnext.com/) - Framework base
+- [Frappe](https://frappe.io/) - Framework Python
+- Comunidade open source
+
+---
+
+**Desenvolvido com ❤️ pela equipe Innexar**
 
 
-## Learning and community
-
-1. [Frappe School](https://frappe.school) - Learn Frappe Framework and ERPNext from the various courses by the maintainers or from the community.
-2. [Official documentation](https://docs.erpnext.com/) - Extensive documentation for ERPNext.
-3. [Discussion Forum](https://discuss.erpnext.com/) - Engage with community of ERPNext users and service providers.
-4. [Telegram Group](https://t.me/erpnexthelp) - Get instant help from huge community of users.
-
-
-## Contributing
-
-1. [Issue Guidelines](https://github.com/frappe/erpnext/wiki/Issue-Guidelines)
-1. [Report Security Vulnerabilities](https://erpnext.com/security)
-1. [Pull Request Requirements](https://github.com/frappe/erpnext/wiki/Contribution-Guidelines)
-1. [Translations](https://translate.erpnext.com)
-
-
-## License
-
-GNU/General Public License (see [license.txt](license.txt))
-
-The ERPNext code is licensed as GNU General Public License (v3) and the Documentation is licensed as Creative Commons (CC-BY-SA-3.0) and the copyright is owned by Frappe Technologies Pvt Ltd (Frappe) and Contributors.
-
-By contributing to ERPNext, you agree that your contributions will be licensed under its GNU General Public License (v3).
-
-## Logo and Trademark Policy
-
-Please read our [Logo and Trademark Policy](TRADEMARK_POLICY.md).

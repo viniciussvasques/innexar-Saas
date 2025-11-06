@@ -1,0 +1,70 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"_KhQtLVDGv\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Innexar SaaS</b></span>\",\"col\":12}},{\"id\":\"Ag0YlTejx7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"SAAS Plan\",\"col\":3}},{\"id\":\"TpDwMlNR3K\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"SAAS Tenant\",\"col\":3}},{\"id\":\"VwZXqJNmKp\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h5\\\">Planos e Tenants</span>\",\"col\":12}},{\"id\":\"dKLmNpQRXv\",\"type\":\"card\",\"data\":{\"card_name\":\"Planos SaaS\",\"col\":4}},{\"id\":\"XmKpNqRvZw\",\"type\":\"card\",\"data\":{\"card_name\":\"Tenants\",\"col\":4}}]",
+ "creation": "2025-11-05 15:40:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "server",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Innexar SaaS",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SAAS Plan",
+   "link_count": 0,
+   "link_to": "SAAS Plan",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "SAAS Tenant",
+   "link_count": 0,
+   "link_to": "SAAS Tenant",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-11-05 15:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "SAAS Management",
+ "name": "Innexar SaaS",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1,
+ "shortcuts": [
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "format": "{} Active",
+   "label": "SAAS Plan",
+   "link_to": "SAAS Plan",
+   "stats_filter": "{\"active\": 1}",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} Active",
+   "label": "SAAS Tenant",
+   "link_to": "SAAS Tenant",
+   "stats_filter": "{\"state\": \"active\"}",
+   "type": "DocType"
+  }
+ ],
+ "title": "Innexar SaaS"
+}
+
+

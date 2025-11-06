@@ -1,0 +1,68 @@
+{
+    "app_name": "saas_management",
+    "app_title": "SaaS Management",
+    "app_publisher": "Innexar",
+    "app_description": "Módulo para gerenciamento de multi-tenancy no ERPNext",
+    "app_icon": "octicon octicon-server",
+    "app_color": "#3498db",
+    "app_email": "contato@innexar.com.br",
+    "app_license": "MIT",
+    "required_apps": ["erpnext"],
+    "doc_types": ["SAAS Plan", "SAAS Tenant"],
+    "fixtures": [
+        {
+            "dt": "Custom Field",
+            "filters": [
+                ["fieldname", "like", "%saas_%"],
+                ["fieldname", "like", "%tenant_%"],
+                ["fieldname", "like", "%plan_%"]
+            ]
+        },
+        {
+            "dt": "Property Setter",
+            "filters": [
+                ["doc_type", "in", ["SAAS Plan", "SAAS Tenant"]]
+            ]
+        },
+        {
+            "dt": "Role",
+            "filters": [
+                ["name", "in", ["SAAS Manager", "SAAS User"]]
+            ]
+        },
+        {
+            "dt": "Module Def",
+            "filters": [
+                ["name", "=", "SaaS Management"]
+            ]
+        }
+    ],
+    "scheduler_events": {
+        "cron": {
+            "0 0 * * *": ["saas_management.utils.background_tasks.daily_backup"]
+        },
+        "daily": ["saas_management.utils.background_tasks.cleanup_old_backups"],
+        "weekly": ["saas_management.utils.background_tasks.weekly_reports"],
+        "monthly": ["saas_management.utils.background_tasks.monthly_billing"]
+    },
+    "sounds": [
+        {
+            "name": "new_tenant",
+            "src": "/assets/saas_management/sounds/new_tenant.mp3",
+            "label": "Novo Tenant Criado"
+        },
+        {
+            "name": "container_started",
+            "src": "/assets/saas_management/sounds/container_started.mp3",
+            "label": "Container Iniciado"
+        }
+    ],
+    "website_route_rules": [
+        {
+            "from_route": "/saas/<path:app_path>",
+            "to_route": "saas_management"
+        }
+    ],
+    "on_update": "saas_management.install.after_install",
+    "on_uninstall": "saas_management.uninstall.before_uninstall"
+}

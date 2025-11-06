@@ -1,0 +1,19 @@
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "innexar_core"
+version = "0.0.1"
+description = "Innexar Core - SaaS Management"
+dependencies = [
+    "frappe",
+    "docker",
+]
+
+[project.optional-dependencies]
+dev = []
+
+[tool.bench]
+app_name = "innexar_core"
+
