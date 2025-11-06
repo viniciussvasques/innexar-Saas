@@ -1,0 +1,229 @@
+version: '3.8'
+
+services:
+  # Redis para cache
+  redis-cache:
+    image: redis:6.2-alpine
+    container_name: innexar-redis-cache
+    restart: always
+    command: redis-server --port 6379
+    volumes:
+      - redis_cache_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - innexar-network
+
+  # Redis para fila
+  redis-queue:
+    image: redis:6.2-alpine
+    container_name: innexar-redis-queue
+    restart: always
+    command: redis-server --port 6379
+    volumes:
+      - redis_queue_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - innexar-network
+
+  # Redis para Socket.IO
+  redis-socketio:
+    image: redis:6.2-alpine
+    container_name: innexar-redis-socketio
+    restart: always
+    command: redis-server --port 6379
+    volumes:
+      - redis_socketio_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - innexar-network
+
+  # Banco de dados MariaDB
+  db:
+    image: mariadb:10.6
+    container_name: innexar-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: innexar_root_pass
+      MYSQL_DATABASE: innexar
+      MYSQL_USER: innexar
+      MYSQL_PASSWORD: innexar_pass
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./config/mariadb.cnf:/etc/mysql/conf.d/custom.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      timeout: 5s
+      retries: 10
+    ports:
+      - "3306:3306"
+    networks:
+      - innexar-network
+
+  # Backend Frappe/ERPNext
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile.simple
+    container_name: innexar-backend
+    restart: always
+    volumes:
+      - erpnext_data:/home/frappe/erpnext
+      - sites_data:/home/frappe/bench-repo/sites
+      - logs_data:/home/frappe/bench-repo/logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - MYSQL_ROOT_PASSWORD=innexar_root_pass
+      - ADMIN_PASSWORD=innexar_admin
+      - DB_ROOT_USER=root
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=innexar
+      - DB_USER=innexar
+      - DB_PASSWORD=innexar_pass
+      - REDIS_CACHE=redis-cache:6379
+      - REDIS_QUEUE=redis-queue:6379
+      - REDIS_SOCKETIO=redis-socketio:6379
+      - SOCKETIO_PORT=9000
+      - AUTO_MIGRATE=1
+      - INSTALL_APPS=erpnext
+      - INSTALL_APPS_DEV=1
+      - INSTALL_APPS_WAIT=1
+      - FRAPPE_SITE=innexar.local
+      - SITE_NAME=innexar.local
+      - SITES=innexar.local
+      - DEFAULT_SITE=innexar.local
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    depends_on:
+      redis-cache:
+        condition: service_healthy
+      redis-queue:
+        condition: service_healthy
+      redis-socketio:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "gunicorn"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - innexar-network
+
+  # Frontend Nginx
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: innexar-frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - sites_data:/var/www/html/sites
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - innexar-network
+
+  # Worker para processamento assíncrono
+  worker:
+    image: innexar-platform-backend
+    container_name: innexar-worker
+    restart: always
+    command: ["bash", "-c", "source /home/frappe/venv/bin/activate && bench worker --queue short,long,default"]
+    volumes:
+      - erpnext_data:/home/frappe/erpnext
+      - sites_data:/home/frappe/bench-repo/sites
+      - logs_data:/home/frappe/bench-repo/logs
+    environment:
+      - MYSQL_ROOT_PASSWORD=innexar_root_pass
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=innexar
+      - DB_USER=innexar
+      - DB_PASSWORD=innexar_pass
+      - REDIS_QUEUE=redis-queue:6379
+    depends_on:
+      redis-queue:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "bench worker"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - innexar-network
+
+  # Agendador de tarefas
+  scheduler:
+    image: innexar-platform-backend
+    container_name: innexar-scheduler
+    restart: always
+    command: ["bash", "-c", "source /home/frappe/venv/bin/activate && bench schedule"]
+    volumes:
+      - erpnext_data:/home/frappe/erpnext
+      - sites_data:/home/frappe/bench-repo/sites
+      - logs_data:/home/frappe/bench-repo/logs
+    environment:
+      - MYSQL_ROOT_PASSWORD=innexar_root_pass
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=innexar
+      - DB_USER=innexar
+      - DB_PASSWORD=innexar_pass
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "bench schedule"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - innexar-network
+
+# Redes
+networks:
+  innexar-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+
+# Volumes para persistência de dados
+volumes:
+  db_data:
+  redis_cache_data:
+  redis_queue_data:
+  redis_socketio_data:
+  erpnext_data:
+  sites_data:
+  logs_data:
+  nginx_logs:

@@ -1,0 +1,64 @@
+{
+    "site_name": "erpbase.local",
+    "db_name": "erpbase",
+    "db_user": "erpbase_user",
+    "db_password": "erpbase_pass",
+    "admin_password": "erpbase_admin",
+    "install_apps": ["erpnext"],
+    "developer_mode": 1,
+    "email": {
+        "mail_server": "smtp.gmail.com",
+        "mail_port": 587,
+        "use_tls": 1,
+        "mail_login": "noreply@innexar.com.br",
+        "mail_password": "sua_senha_aqui"
+    },
+    "redis": {
+        "cache": "redis-cache:6379",
+        "queue": "redis-queue:6379",
+        "socketio": "redis-socketio:6379"
+    },
+    "scheduler": {
+        "enabled": true,
+        "interval": 3600
+    },
+    "backup": {
+        "enabled": true,
+        "backup_path": "/home/frappe/backups",
+        "backup_retention_days": 30
+    },
+    "saas": {
+        "enabled": true,
+        "base_domain": "innexar.com.br",
+        "default_plan": "BASIC",
+        "max_users": 5,
+        "max_storage": 10,
+        "modules": [
+            "accounts",
+            "selling",
+            "buying",
+            "stock",
+            "hr",
+            "crm"
+        ]
+    },
+    "security": {
+        "password_policy": {
+            "min_length": 8,
+            "require_symbols": true,
+            "require_numbers": true,
+            "require_uppercase": true,
+            "require_lowercase": true
+        },
+        "login_attempts": 5,
+        "lockout_duration": 30
+    },
+    "logging": {
+        "level": "INFO",
+        "max_size": "10MB",
+        "backup_count": 5
+    },
+    "custom_domains": [],
+    "maintenance_mode": false,
+    "pause_scheduler": false
+}

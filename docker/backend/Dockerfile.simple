@@ -1,0 +1,118 @@
+# Use a imagem base oficial do Python
+FROM python:3.10-slim-bullseye
+
+# Variáveis de ambiente
+ENV DEBIAN_FRONTEND=noninteractive \
+    FRAPPE_USER=frappe \
+    FRAPPE_PASSWORD=innexar_pass \
+    FRAPPE_ADMIN_EMAIL=admin@innexar.com \
+    FRAPPE_ADMIN_PASSWORD=innexar_admin \
+    FRAPPE_SITE=innexar.local \
+    SITE_NAME_PREFIX=innexar \
+    BENCH_PATH=/home/frappe/bench-repo \
+    BENCH_BRANCH=version-14 \
+    BENCH_UPDATE_PACKAGES=true
+
+# Instalar dependências do sistema
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    wget \
+    build-essential \
+    python3-dev \
+    python3-setuptools \
+    python3-pip \
+    python3-venv \
+    python3-wheel \
+    software-properties-common \
+    mariadb-client \
+    libmariadb-dev \
+    libffi-dev \
+    libssl-dev \
+    libjpeg-dev \
+    libldap2-dev \
+    libsasl2-dev \
+    libxslt1.1 \
+    libxslt1-dev \
+    libpq-dev \
+    xz-utils \
+    cron \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar Node.js e Yarn
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends nodejs && \
+    npm install -g yarn && \
+    rm -rf /var/lib/apt/lists/*
+
+# Instalar o wkhtmltopdf manualmente
+RUN wget -O /tmp/wkhtmltox.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.buster_amd64.deb && \
+    dpkg -i /tmp/wkhtmltox.deb || apt-get install -yf && \
+    rm -f /tmp/wkhtmltox.deb
+
+# Configurar usuário e diretórios
+RUN useradd -ms /bin/bash frappe && \
+    mkdir -p /home/frappe/bench-repo /home/frappe/erpnext && \
+    chown -R frappe:frappe /home/frappe
+
+# Instalar bench
+RUN pip3 install --no-cache-dir frappe-bench
+
+# Configurar o ambiente
+USER frappe
+WORKDIR /home/frappe
+
+# Criar um ambiente virtual para o bench
+RUN python3 -m venv /home/frappe/venv
+ENV VIRTUAL_ENV=/home/frappe/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Atualizar pip e instalar wheel
+RUN pip install --upgrade pip wheel
+
+# Instalar o Frappe Framework
+RUN pip install frappe-bench
+
+# Criar diretórios necessários e configurar permissões
+RUN mkdir -p /home/frappe/bench-repo /home/frappe/erpnext && \
+    chown -R frappe:frappe /home/frappe
+
+# Copiar o código-fonte do ERPNext para o diretório correto
+COPY --chown=frappe:frappe . /home/frappe/erpnext/
+
+# Instalar o ERPNext em modo de desenvolvimento
+RUN cd /home/frappe/erpnext && \
+    pip install -e .
+
+# Configurar o ambiente bench
+USER frappe
+WORKDIR /home/frappe
+
+# Inicializar o ambiente bench
+RUN cd /home/frappe && \
+    # Remover diretório bench-repo se existir
+    rm -rf /home/frappe/bench-repo && \
+    # Inicializar o ambiente bench
+    bench init --skip-redis-config-generation --frappe-branch version-14 --python /home/frappe/venv/bin/python bench-repo --skip-assets --skip-redis-config-generation && \
+    cd /home/frappe/bench-repo && \
+    # Instalar o ERPNext
+    bench get-app --skip-assets --resolve-deps erpnext /home/frappe/erpnext
+
+# Copiar scripts de inicialização
+COPY --chown=frappe:frappe ./docker/backend/entrypoint.sh /home/frappe/entrypoint.sh
+RUN chmod +x /home/frappe/entrypoint.sh
+
+# Expor portas
+EXPOSE 8000 9000
+
+# Definir diretório de trabalho
+WORKDIR /home/frappe/bench-repo
+
+# Definir o ponto de entrada
+ENTRYPOINT ["/home/frappe/entrypoint.sh"]
+
+# Comando padrão para iniciar o servidor
+CMD ["bash", "-c", "source /home/frappe/venv/bin/activate && bench start"]

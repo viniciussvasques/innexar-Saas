@@ -1,53 +1,103 @@
 <div align="center">
-    <a href="https://erpnext.com">
-        <img src="https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/public/images/erpnext-logo.png" height="128">
-    </a>
-    <h2>ERPNext</h2>
+    <h1>Innexar Platform</h1>
     <p align="center">
-        <p>ERP made simple</p>
+        <p>ERP personalizado baseado no ERPNext para a Innexar</p>
     </p>
 
-[![CI](https://github.com/frappe/erpnext/actions/workflows/server-tests.yml/badge.svg?branch=develop)](https://github.com/frappe/erpnext/actions/workflows/server-tests.yml)
-[![UI](https://github.com/erpnext/erpnext_ui_tests/actions/workflows/ui-tests.yml/badge.svg?branch=develop&event=schedule)](https://github.com/erpnext/erpnext_ui_tests/actions/workflows/ui-tests.yml)
-[![Open Source Helpers](https://www.codetriage.com/frappe/erpnext/badges/users.svg)](https://www.codetriage.com/frappe/erpnext)
-[![codecov](https://codecov.io/gh/frappe/erpnext/branch/develop/graph/badge.svg?token=0TwvyUg3I5)](https://codecov.io/gh/frappe/erpnext)
-[![docker pulls](https://img.shields.io/docker/pulls/frappe/erpnext-worker.svg)](https://hub.docker.com/r/frappe/erpnext-worker)
-
-[https://erpnext.com](https://erpnext.com)
+![Innexar Platform](https://via.placeholder.com/600x200.png?text=Innexar+Platform)
 
 </div>
 
-ERPNext as a monolith includes the following areas for managing businesses:
+## 🚀 Visão Geral
+A Innexar Platform é uma solução ERP personalizada baseada no ERPNext, desenvolvida para atender às necessidades específicas da Innexar e seus clientes.
 
-1. [Accounting](https://erpnext.com/open-source-accounting)
-1. [Warehouse Management](https://erpnext.com/distribution/warehouse-management-system)
-1. [CRM](https://erpnext.com/open-source-crm)
-1. [Sales](https://erpnext.com/open-source-sales-purchase)
-1. [Purchase](https://erpnext.com/open-source-sales-purchase)
-1. [HRMS](https://erpnext.com/open-source-hrms)
-1. [Project Management](https://erpnext.com/open-source-projects)
-1. [Support](https://erpnext.com/open-source-help-desk-software)
-1. [Asset Management](https://erpnext.com/open-source-asset-management-software)
-1. [Quality Management](https://erpnext.com/docs/user/manual/en/quality-management)
-1. [Manufacturing](https://erpnext.com/open-source-manufacturing-erp-software)
-1. [Website Management](https://erpnext.com/open-source-website-builder-software)
-1. [Customize ERPNext](https://erpnext.com/docs/user/manual/en/customize-erpnext)
-1. [And More](https://erpnext.com/docs/user/manual/en/)
+## 🛠️ Primeiros Passos
 
-ERPNext is built on the [Frappe Framework](https://github.com/frappe/frappe), a full-stack web app framework built with Python & JavaScript.
+### ✅ Pré-requisitos
+- Docker Desktop para Windows
+- Git
+- PowerShell 5.1 ou superior
 
-## Installation
+### 🚀 Iniciando o Ambiente
 
-<div align="center" style="max-height: 40px;">
-    <a href="https://frappecloud.com/erpnext/signup">
-        <img src=".github/try-on-f-cloud-button.svg" height="40">
-    </a>
-    <a href="https://labs.play-with-docker.com/?stack=https://raw.githubusercontent.com/frappe/frappe_docker/main/pwd.yml">
-      <img src="https://raw.githubusercontent.com/play-with-docker/stacks/master/assets/images/button.png" alt="Try in PWD" height="37"/>
-    </a>
-</div>
+1. **Clonar o repositório** (se ainda não tiver feito):
+   ```powershell
+   git clone https://github.com/Innexar/innexar-platform.git
+   cd innexar-platform
+   ```
 
-> Login for the PWD site: (username: Administrator, password: admin)
+2. **Iniciar o ambiente** (pode demorar na primeira execução):
+   ```powershell
+   .\start-dev.ps1
+   ```
+   > Nota: Na primeira execução, o script irá:
+   > 1. Verificar e instalar dependências
+   > 2. Baixar as imagens Docker necessárias
+   > 3. Configurar o banco de dados
+   > 4. Iniciar todos os serviços
+
+3. **Acessar o sistema**:
+   - URL: http://localhost:8000
+   - Usuário: Administrator
+   - Senha: innexar_admin
+
+## 🏗️ Estrutura do Projeto
+
+```
+innexar-platform/
+├── apps/                    # Aplicativos personalizados
+├── config/                 # Configurações do ambiente
+│   └── mariadb.cnf         # Configuração do MariaDB
+├── docker/                 # Configurações Docker
+│   ├── backend/           # Configurações do backend
+│   └── nginx/             # Configurações do Nginx
+├── logs/                  # Logs da aplicação
+├── sites/                 # Sites e arquivos de configuração
+├── docker-compose.yml     # Configuração do Docker Compose
+└── start-dev.ps1         # Script de inicialização
+```
+
+## 🛠️ Comandos Úteis
+
+- **Reiniciar containers**:
+  ```powershell
+  docker-compose restart
+  ```
+
+- **Visualizar logs**:
+  ```powershell
+  docker-compose logs -f
+  ```
+
+- **Acessar terminal do container backend**:
+  ```powershell
+  docker-compose exec backend bash
+  ```
+
+- **Criar backup**:
+  ```powershell
+  docker-compose exec backend bench --site innexar.local backup
+  ```
+
+- **Atualizar aplicativos**:
+  ```powershell
+  docker-compose exec backend bench --site innexar.local migrate
+  ```
+
+## 🔄 Desenvolvimento
+
+### Criar um novo aplicativo
+```powershell
+docker-compose exec backend bench new-app innexar_novo_app
+```
+
+### Instalar um aplicativo
+```powershell
+docker-compose exec backend bench --site innexar.local install-app innexar_novo_app
+```
+
+## 📄 Licença
+Proprietário - Todos os direitos reservados © 2025 Innexar Platform
 
 ### Containerized Installation
 

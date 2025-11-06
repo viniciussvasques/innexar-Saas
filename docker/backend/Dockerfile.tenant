@@ -1,0 +1,42 @@
+FROM innexar-platform-backend:latest
+
+# Instalar o innexar_core app nativamente na imagem
+USER frappe
+WORKDIR /home/frappe/bench-repo
+
+# Copiar o innexar_core app
+# NOTA: Este Dockerfile deve ser buildado a partir da raiz do projeto (onde innexar-core/ e innexar-platform/ estão no mesmo nível)
+# Use: docker build -f innexar-platform/docker/backend/Dockerfile.tenant -t innexar-platform-backend:tenant .
+COPY --chown=frappe:frappe innexar-core /home/frappe/bench-repo/apps/innexar_core
+
+# Instalar o app no ambiente virtual Python
+RUN . /home/frappe/bench-repo/env/bin/activate && \
+    cd /home/frappe/bench-repo/apps/innexar_core && \
+    pip install -e . && \
+    echo "innexar_core instalado no ambiente virtual"
+
+# Garantir que apps.txt contenha todos os apps necessários
+# apps.txt deve estar na raiz do bench-repo, não em sites/
+RUN if [ ! -f /home/frappe/bench-repo/apps.txt ]; then \
+    echo -e "frappe\nerpnext\ninnexar_core" > /home/frappe/bench-repo/apps.txt && \
+    echo "apps.txt criado com frappe, erpnext e innexar_core"; \
+    else \
+    # Verifica se innexar_core já está no arquivo
+    if ! grep -q "innexar_core" /home/frappe/bench-repo/apps.txt; then \
+    echo "innexar_core" >> /home/frappe/bench-repo/apps.txt && \
+    echo "innexar_core adicionado ao apps.txt existente"; \
+    fi; \
+    fi
+
+# Copiar entrypoint customizado para tenants
+COPY --chown=frappe:frappe innexar-platform/docker/backend/entrypoint.tenant.sh /home/frappe/entrypoint.sh
+RUN chmod +x /home/frappe/entrypoint.sh
+
+# Verificar se o innexar_core está instalado
+RUN . /home/frappe/bench-repo/env/bin/activate && \
+    python -c "import innexar_core; print('innexar_core importado com sucesso')" || \
+    echo "AVISO: innexar_core não pôde ser importado durante o build"
+
+# Comando de inicialização
+ENTRYPOINT ["/home/frappe/entrypoint.sh"]
+CMD ["start"]

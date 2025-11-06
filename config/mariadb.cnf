@@ -1,0 +1,46 @@
+[mysqld]
+# Configurações gerais
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+skip-name-resolve
+
+# Buffer Pool Size (70-80% da memória disponível)
+innodb_buffer_pool_size = 2G
+
+# Logs e cache
+innodb_log_file_size = 512M
+innodb_log_buffer_size = 8M
+
+# Configurações de desempenho
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method = O_DIRECT
+innodb_file_per_table = 1
+innodb_thread_concurrency = 8
+
+# Otimizações para hardware moderno
+innodb_read_io_threads = 8
+innodb_write_io_threads = 8
+innodb_io_capacity = 2000
+innodb_io_capacity_max = 4000
+
+# Configurações de conexão
+max_connections = 500
+max_allowed_packet = 256M
+wait_timeout = 120
+interactive_timeout = 120
+
+# Configurações de cache
+query_cache_type = 1
+query_cache_size = 128M
+query_cache_limit = 4M
+
+# Logs
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/mariadb-slow.log
+long_query_time = 2
+
+[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4
